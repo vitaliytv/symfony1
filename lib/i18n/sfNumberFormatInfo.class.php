@@ -17,7 +17,7 @@
  * @package    symfony
  * @subpackage i18n
  */
- 
+
 /**
  * sfNumberFormatInfo class
  * 
@@ -75,13 +75,10 @@ class sfNumberFormatInfo
    */
   function __get($name)
   {
-    $getProperty = 'get'.$name;
-    if (in_array($getProperty, $this->properties))
-    {
+    $getProperty = 'get' . $name;
+    if (in_array($getProperty, $this->properties)) {
       return $this->$getProperty();
-    }
-    else
-    {
+    } else {
       throw new sfException(sprintf('Property %s does not exists.', $name));
     }
   }
@@ -92,13 +89,10 @@ class sfNumberFormatInfo
    */
   function __set($name, $value)
   {
-    $setProperty = 'set'.$name;
-    if (in_array($setProperty, $this->properties))
-    {
+    $setProperty = 'set' . $name;
+    if (in_array($setProperty, $this->properties)) {
       $this->$setProperty($value);
-    }
-    else
-    {
+    } else {
       throw new sfException(sprintf('Property %s can not be set.', $name));
     }
   }
@@ -118,8 +112,7 @@ class sfNumberFormatInfo
   {
     $this->properties = get_class_methods($this);
 
-    if (empty($data))
-    {
+    if (empty($data)) {
       throw new sfException('Please provide the ICU data to initialize.');
     }
 
@@ -137,18 +130,15 @@ class sfNumberFormatInfo
    */
   function setPattern($type = sfNumberFormatInfo::DECIMAL)
   {
-    if (is_int($type))
-    {
+    if (is_int($type)) {
       $this->pattern = $this->parsePattern($this->data['NumberPatterns'][$type]);
-    }
-    else
-    {
+    } else {
       $this->pattern = $this->parsePattern($type);
     }
 
-    $this->pattern['negInfty'] = $this->data['NumberElements'][6].$this->data['NumberElements'][9];
+    $this->pattern['negInfty'] = $this->data['NumberElements'][6] . $this->data['NumberElements'][9];
 
-    $this->pattern['posInfty'] = $this->data['NumberElements'][11].$this->data['NumberElements'][9];
+    $this->pattern['posInfty'] = $this->data['NumberElements'][11] . $this->data['NumberElements'][9];
   }
 
   function getPattern()
@@ -164,8 +154,7 @@ class sfNumberFormatInfo
   static public function getInvariantInfo($type = sfNumberFormatInfo::DECIMAL)
   {
     static $invariant;
-    if (null === $invariant)
-    {
+    if (null === $invariant) {
       $culture = sfCultureInfo::getInvariantCulture();
       $invariant = $culture->NumberFormat;
       $invariant->setPattern($type);
@@ -188,23 +177,18 @@ class sfNumberFormatInfo
    */
   public static function getInstance($culture = null, $type = sfNumberFormatInfo::DECIMAL)
   {
-    if ($culture instanceof sfCultureInfo)
-    {
+    if ($culture instanceof sfCultureInfo) {
       $formatInfo = $culture->getNumberFormat();
       $formatInfo->setPattern($type);
 
       return $formatInfo;
-    }
-    else if (is_string($culture))
-    {
+    } else if (is_string($culture)) {
       $sfCultureInfo = sfCultureInfo::getInstance($culture);
       $formatInfo = $sfCultureInfo->getNumberFormat();
       $formatInfo->setPattern($type);
 
       return $formatInfo;
-    }
-    else
-    {
+    } else {
       $sfCultureInfo = sfCultureInfo::getInstance();
       $formatInfo = $sfCultureInfo->getNumberFormat();
       $formatInfo->setPattern($type);
@@ -257,8 +241,7 @@ class sfNumberFormatInfo
     $pattern = explode(';', $pattern);
 
     $negative = null;
-    if (count($pattern) > 1)
-    {
+    if (count($pattern) > 1) {
       $negative = $pattern[1];
     }
     $pattern = $pattern[0];
@@ -284,40 +267,31 @@ class sfNumberFormatInfo
     $info['posPref'] = $posfix[0];
     $info['posPost'] = $posfix[1];
 
-    if ($negative)
-    {
+    if ($negative) {
       // find the negative prefix and postfix
       $prefixPostfix = $this->getPrePostfix($negative);
       $info['negPref'] = $prefixPostfix[0];
       $info['negPost'] = $prefixPostfix[1];
-    }
-    else
-    {
+    } else {
       // use the positive prefix and postfix and add the NegativeSign
       // http://www.unicode.org/reports/tr35/tr35-15.html#Number_Format_Patterns
       // If there is no explicit negative subpattern, the negative subpattern is the localized minus sign prefixed to the positive subpattern.
-      $info['negPref'] = $this->getNegativeSign().$info['posPref'];
+      $info['negPref'] = $this->getNegativeSign() . $info['posPref'];
       $info['negPost'] = $info['posPost'];
     }
 
-    if (is_int($groupPos1))
-    {
+    if (is_int($groupPos1)) {
       // get the second group
       $groupPos2 = strrpos(substr($pattern, 0, $groupPos1), $comma);
 
       // get the number of decimal digits
-      if (is_int($decimalPos))
-      {
+      if (is_int($decimalPos)) {
         $groupSize1 = $decimalPos - $groupPos1 - 1;
-      }
-      else
-      {
+      } else {
         // no decimal point, so traverse from the back
         // to find the groupsize 1.
-        for ($i = strlen($pattern) - 1; $i >= 0; $i--)
-        {
-          if ($pattern{$i} == $digit || $pattern{$i} == $hash)
-          {
+        for ($i = strlen($pattern) - 1; $i >= 0; $i--) {
+          if ($pattern[$i] == $digit || $pattern[$i] == $hash) {
             $groupSize1 = $i - $groupPos1;
             break;
           }
@@ -325,22 +299,17 @@ class sfNumberFormatInfo
       }
 
       // get the second group size
-      if (is_int($groupPos2))
-      {
+      if (is_int($groupPos2)) {
         $groupSize2 = $groupPos1 - $groupPos2 - 1;
       }
     }
 
-    if (is_int($decimalPos))
-    {
-      for ($i = strlen($pattern) - 1; $i >= 0; $i--)
-      {
-        if ($pattern{$i} == $dot)
-        {
+    if (is_int($decimalPos)) {
+      for ($i = strlen($pattern) - 1; $i >= 0; $i--) {
+        if ($pattern[$i] == $dot) {
           break;
         }
-        if ($pattern{$i} == $digit)
-        {
+        if ($pattern[$i] == $digit) {
           $decimalPoints = $i - $decimalPos;
           break;
         }
@@ -549,12 +518,9 @@ class sfNumberFormatInfo
    */
   function getCurrencySymbol($currency = 'USD')
   {
-    if (isset($this->pattern['symbol']))
-    {
+    if (isset($this->pattern['symbol'])) {
       return $this->pattern['symbol'];
-    }
-    else
-    {
+    } else {
       return $this->data['Currencies'][$currency][0];
     }
   }
