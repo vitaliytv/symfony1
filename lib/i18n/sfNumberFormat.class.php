@@ -80,20 +80,13 @@ class sfNumberFormat
    */
   function __construct($formatInfo = null)
   {
-    if (null === $formatInfo)
-    {
+    if (null === $formatInfo) {
       $this->formatInfo = sfNumberFormatInfo::getInvariantInfo();
-    }
-    else if ($formatInfo instanceof sfCultureInfo)
-    {
+    } else if ($formatInfo instanceof sfCultureInfo) {
       $this->formatInfo = $formatInfo->getNumberFormat();
-    }
-    else if ($formatInfo instanceof sfNumberFormatInfo)
-    {
+    } else if ($formatInfo instanceof sfNumberFormatInfo) {
       $this->formatInfo = $formatInfo;
-    }
-    else
-    {
+    } else {
       $this->formatInfo = sfNumberFormatInfo::getInstance($formatInfo);
     }
   }
@@ -116,8 +109,7 @@ class sfNumberFormat
   {
     $this->setPattern($pattern);
 
-    if (strtolower($pattern) == 'p')
-    {
+    if (strtolower($pattern) == 'p') {
       $number *= 100;
     }
 
@@ -130,25 +122,21 @@ class sfNumberFormat
     $decimal = $this->formatDecimal($string);
     $integer = $this->formatInteger($this->fixFloat(abs($number)));
 
-    $result = (strlen($decimal) > 0) ? $integer.$decimal : $integer;
+    $result = (strlen($decimal) > 0) ? $integer . $decimal : $integer;
 
     // get the suffix
-    if ($number >= 0)
-    {
+    if ($number >= 0) {
       $suffix = $this->formatInfo->PositivePattern;
-    }
-    else if ($number < 0)
-    {
+    } else if ($number < 0) {
       $suffix = $this->formatInfo->NegativePattern;
     }
 
     // append and prepend suffix
-    $result = $suffix[0].$result.$suffix[1];
+    $result = $suffix[0] . $result . $suffix[1];
 
     // replace currency sign
     $symbol = @$this->formatInfo->getCurrencySymbol($currency);
-    if (null === $symbol)
-    {
+    if (null === $symbol) {
       $symbol = $currency;
     }
 
@@ -169,8 +157,7 @@ class sfNumberFormat
 
     $dp = strpos($string, '.');
 
-    if (is_int($dp))
-    {
+    if (is_int($dp)) {
       $string = substr($string, 0, $dp);
     }
 
@@ -188,43 +175,31 @@ class sfNumberFormat
     $multiGroup = is_int($groupSize[1]);
     $count = 0;
 
-    if (is_int($groupSize[0]))
-    {
+    if (is_int($groupSize[0])) {
       // now for the integer groupings
-      for ($i = 0; $i < $len; $i++)
-      {
+      for ($i = 0; $i < $len; $i++) {
         $char = $string[$len - $i - 1];
 
-        if ($multiGroup && $count == 0)
-        {
-          if ($i != 0 && $i % $groupSize[0] == 0)
-          {
-            $integer = $groupSeparator.$integer;
+        if ($multiGroup && $count == 0) {
+          if ($i != 0 && $i % $groupSize[0] == 0) {
+            $integer = $groupSeparator . $integer;
             $count++;
           }
-        }
-        else if ($multiGroup && $count >= 1)
-        {
-          if ($i != 0 && ($i - $groupSize[0]) % $groupSize[1] == 0)
-          {
-            $integer = $groupSeparator.$integer;
+        } else if ($multiGroup && $count >= 1) {
+          if ($i != 0 && ($i - $groupSize[0]) % $groupSize[1] == 0) {
+            $integer = $groupSeparator . $integer;
             $count++;
           }
-        }
-        else
-        {
-          if ($i != 0 && $i % $groupSize[0] == 0)
-          {
-            $integer = $groupSeparator.$integer;
+        } else {
+          if ($i != 0 && $i % $groupSize[0] == 0) {
+            $integer = $groupSeparator . $integer;
             $count++;
           }
         }
 
-        $integer = $char.$integer;
+        $integer = $char . $integer;
       }
-    }
-    else
-    {
+    } else {
       $integer = $string;
     }
 
@@ -245,41 +220,27 @@ class sfNumberFormat
     $decimalDigits = $this->formatInfo->DecimalDigits;
     $decimalSeparator = $this->formatInfo->DecimalSeparator;
 
-    if (is_int($dp))
-    {
-      if ($decimalDigits == -1)
-      {
+    if (is_int($dp)) {
+      if ($decimalDigits == -1) {
         $decimal = substr($string, $dp + 1);
-      }
-      else if (is_int($decimalDigits))
-      {
-        if (false === $pos = strpos($string, '.'))
-        {
+      } else if (is_int($decimalDigits)) {
+        if (false === $pos = strpos($string, '.')) {
           $decimal = str_pad($decimal, $decimalDigits, '0');
-        }
-        else
-        {
+        } else {
           $decimal = substr($string, $pos + 1);
-          if (strlen($decimal) <= $decimalDigits)
-          {
+          if (strlen($decimal) <= $decimalDigits) {
             $decimal = str_pad($decimal, $decimalDigits, '0');
-          }
-          else
-          {
+          } else {
             $decimal = substr($decimal, 0, $decimalDigits);
           }
         }
-      }
-      else
-      {
+      } else {
         return $decimal;
       }
 
-      return $decimalSeparator.$decimal;
-    }
-    else if ($decimalDigits > 0)
-    {
-      return $decimalSeparator.str_pad($decimal, $decimalDigits, '0');
+      return $decimalSeparator . $decimal;
+    } else if ($decimalDigits > 0) {
+      return $decimalSeparator . str_pad($decimal, $decimalDigits, '0');
     }
 
     return $decimal;
@@ -294,8 +255,7 @@ class sfNumberFormat
    */
   protected function setPattern($pattern)
   {
-    switch ($pattern)
-    {
+    switch ($pattern) {
       case 'c':
       case 'C':
         $this->formatInfo->setPattern(sfNumberFormatInfo::CURRENCY);
@@ -322,21 +282,20 @@ class sfNumberFormat
   {
     $string = (string) $float;
 
-    if (false === strpos($float, 'E'))
-    {
+    if (false === strpos($float, 'E')) {
       return $string;
     }
 
     list($significand, $exp) = explode('E', $string);
     list(, $decimal) = explode('.', $significand);
     if ('-' === $exp[0]) {
-        $exp = str_replace('-', '', $exp);
+      $exp = str_replace('-', '', $exp);
 
-        return '0.'.str_repeat('0', $exp).str_replace('.', '', $significand);
+      return '0.' . str_repeat('0', $exp) . str_replace('.', '', $significand);
     } else {
-        $exp = str_replace('+', '', $exp) - strlen($decimal);
+      $exp = str_replace('+', '', $exp) - strlen($decimal);
 
-        return str_replace('.', '', $significand).str_repeat('0', $exp);
+      return str_replace('.', '', $significand) . str_repeat('0', $exp);
     }
   }
 }
